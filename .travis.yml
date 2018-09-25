@@ -1,25 +1,26 @@
+---
 sudo: false
 language: bash
 cache:
   directories:
-  - "${HOME}/google-cloud-sdk/"
-  - "${HOME}/terraform/"
+    - "${HOME}/google-cloud-sdk/"
+    - "${HOME}/terraform/"
 env:
-- PATH=$PATH:${HOME}/google-cloud-sdk/bin:${HOME}/terraform/bin CLOUDSDK_CORE_DISABLE_PROMPTS=1
+  - PATH=$PATH:${HOME}/google-cloud-sdk/bin:${HOME}/terraform/bin CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
-- openssl aes-256-cbc -K $encrypted_8530b177f5a9_key -iv $encrypted_8530b177f5a9_iv
-  -in credentials.tar.gz.enc -out credentials.tar.gz -d
-- if [ ! -d "${HOME}/google-cloud-sdk/bin" ]; then rm -rf ${HOME}/google-cloud-sdk;
-  curl https://sdk.cloud.google.com | bash; fi
-- tar -xzf credentials.tar.gz
-- gcloud auth activate-service-account --key-file client-secret.json
-- if [ ! -d "${HOME}/terraform/bin" ]; then curl -O https://releases.hashicorp.com/terraform/0.11.8/terraform_0.11.8_linux_amd64.zip; mkdir ${HOME}/terraform/bin; unzip terraform_0.11.8_linux_amd64.zip -d ${HOME}/terraform/bin; fi
+  - openssl aes-256-cbc -K $encrypted_8530b177f5a9_key -iv $encrypted_8530b177f5a9_iv
+    -in credentials.tar.gz.enc -out credentials.tar.gz -d
+  - if [ ! -d "${HOME}/google-cloud-sdk/bin" ]; then rm -rf ${HOME}/google-cloud-sdk;
+    curl https://sdk.cloud.google.com | bash; fi
+  - tar -xzf credentials.tar.gz
+  - gcloud auth activate-service-account --key-file client-secret.json
+  - if [ ! -d "${HOME}/terraform/bin" ]; then curl -O https://releases.hashicorp.com/terraform/0.11.8/terraform_0.11.8_linux_amd64.zip; mkdir ${HOME}/terraform/bin; unzip terraform_0.11.8_linux_amd64.zip -d ${HOME}/terraform/bin; fi
 install:
-- gcloud -q components update
-- gcloud -q components install kubectl
+  - gcloud -q components update
+  - gcloud -q components install kubectl
 script:
-- "gcloud version"
-  "terraform version"
+  - "gcloud version"
+  - "terraform version"
 notifications:
   slack:
     secure: yHMmiWReqzaTGFb/rnOYV9oL8HT9AJI+UTWVIKylYlgzRtOr1QPSCuhEqXmHWZKZFthli7dYOBTTJvDamtr01rTfQUriNf/Eu0HSyf1FqjJnACTCLW8qhOrM7ub1q9Cp8MmricQy7JOO0orj9E6wEC9RIYYDyGQ8ISB1Jk+U1QC2vDWM6nn8cDUB+hW1d3LDHayZNiGw4wf0T+IqmA11s+Bj6CCaw50YJdIrYbt/+2QM3KIBmUgRFA6v6sd8v0K3GgIQpv00Yk4dn0elKdREF31yHR6Z4Bt63gd6QXaefuwvRBhrxSFT7se3VjQmgQwLjCAoXdrtKFnlK8Fw8lH6tH1hvrzJdzTsN1a6JvlMkBx3+qieHHPdyPcrFTVDD+FhYyO76j5VmEUALprUYcup19J5VUAWom1MGNmwWPno4BeE4sG/3Uz1CodR3piHwHFe9r3P6QU0P8t4Q/PWZqvKUCHM3+9QAVqTLNUaGMAWW48060hsFtD7eaZWzZYjj5ap9gzgr3Q5ve34p1b1ahtaIj/K+VQKO9bRtkhPBPDusIUSACY90MJ+0mGohBcXMwNDyYLRbTWtaqmdpd7sLBZuZsZGy6x/7Goty0H68IQEp0iPxQ7OU2Xo1hswQaTkCKRTv18EV1dWZ3gLvfulVQEO6BcUXLpTivQfJV0Fcy9qLBI=
