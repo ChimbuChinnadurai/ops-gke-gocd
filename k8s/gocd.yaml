@@ -1,0 +1,95 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: "gocd"
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gocd
+  namespace: gocd
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gocd
+    spec:
+      containers:
+        - name: gocd
+          image: gocd/gocd-server:v18.9.0
+          ports:
+            - containerPort: 8153
+            - containerPort: 8154
+          env:
+            - name: GOCD_PLUGIN_INSTALL_kubernetes_elastic_agents
+              value: "https://github.com/gocd/kubernetes-elastic-agents/releases/download/v1.0.1/kubernetes-elastic-agent-1.0.1-107.jar"
+            - name: GOCD_PLUGIN_INSTALL_google_oauth_authorization_plugin
+              value: "https://github.com/gocd-contrib/google-oauth-authorization-plugin/releases/download/2.0.0/google-oauth-authorization-plugin-2.0.0-7.jar"
+          volumeMounts:
+            - mountPath: /godata
+              name: godata
+          readinessProbe:
+            httpGet:
+              path: /go/api/v1/health
+              port: 8153
+            periodSeconds: 10
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+            successThreshold: 2
+            failureThreshold: 5
+      volumes:
+        - name: godata
+          gcePersistentDisk:
+            pdName: godata
+            fsType: ext4
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gocd-http
+  namespace: gocd
+  labels:
+    app: gocd
+spec:
+  type: NodePort
+  selector:
+    app: gocd
+  ports:
+    - protocol: TCP
+      port: 8153
+      targetPort: 8153
+      name: ui-http
+    - protocol: TCP
+      port: 8154
+      targetPort: 8154
+      name: agent
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gocd
+  namespace: gocd
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: gce
+    kubernetes.io/ingress.allow-http: "true"
+    certmanager.k8s.io/cluster-issuer: letsencrypt
+    certmanager.k8s.io/acme-http01-edit-in-place: "true"
+spec:
+  rules:
+    - host: ${host}.${domain}
+      http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: gocd-http
+              servicePort: 8153
+  tls:
+    - secretName: gocd-tls
+      hosts:
+        - ${host}.${domain}

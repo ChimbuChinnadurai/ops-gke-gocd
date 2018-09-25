@@ -1,4 +1,0 @@
-[submodule "ops-gcp-kubernetes"]
-	path = ops-gcp-kubernetes
-	url = https://github.com/lzysh/ops-gcp-kubernetes.git
-	branch = master
