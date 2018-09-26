@@ -1,6 +1,16 @@
 # GoCD on Google Kuberentes Engine (GKE) [![Build Status](https://travis-ci.org/lzysh/ops-gke-gocd.svg?branch=master)](https://travis-ci.org/lzysh/ops-gke-gocd)
 
 Operations code for running [ThoughtWorks GoCD](https://www.gocd.org/) on [Google Kubernetes Engine (GKE)](https://cloud.google.com/kubernetes-engine) with [Terraform](https://www.terraform.io)
+# Dependencies
+This project uses:
+* [external-dns](https://github.com/kubernetes-incubator/external-dns) to synchronize Kubernetes ingress resources.
+* [cert-manager](https://github.com/jetstack/cert-manager) to provision and manage TLS certificates using Let's Encrypt
+# Production Setup
+## Pre-Requirments
+This is intended to be a usable production environment so there are some pre-reqs:
+* Google Cloud Storage bucket for Terraform remote state
+* Google Cloud DNS zone for external-dns
+
 # IaC Development Sandbox Setup on Linux
 ## Install Google Cloud SDK
 ```none
