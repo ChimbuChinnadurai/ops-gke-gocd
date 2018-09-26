@@ -77,3 +77,8 @@ terraform plan -out="plan.out" -var-file="local.tfvars" -var="project=<gocd-proj
 terraform apply "plan.out"
 ```
 It will take about 5-10 minutes after terraform apply is successful for the GoCD instance to be accessible. Ingress is doing its thing, DNS is being propagated and SSL certificates are being issued.
+
+## Terraform Destroy
+```none
+terraform destroy -var-file="local.tfvars" -var="project=<gocd-project>-${random}-sb -var="host=gocd-${random}"
+```
