@@ -1,7 +1,7 @@
-# GoCD on Google Kuberentes Engine [![Build Status](https://travis-ci.org/lzysh/ops-gke-gocd.svg?branch=master)](https://travis-ci.org/lzysh/ops-gke-gocd)
+# GoCD on Google Kuberentes Engine (GKE) [![Build Status](https://travis-ci.org/lzysh/ops-gke-gocd.svg?branch=master)](https://travis-ci.org/lzysh/ops-gke-gocd)
 
-Operations code for running [ThoughtWorks GoCD](https://www.gocd.org/) on [Google Kubernetes Engine GKE](https://cloud.google.com/kubernetes-engine) with [Terraform](https://www.terraform.io)
-# IaC Development Setup on Linux
+Operations code for running [ThoughtWorks GoCD](https://www.gocd.org/) on [Google Kubernetes Engine (GKE)](https://cloud.google.com/kubernetes-engine) with [Terraform](https://www.terraform.io)
+# IaC Development Sandbox Setup on Linux
 ## Install Google Cloud SDK
 ```none
 curl https://sdk.cloud.google.com | bash
@@ -9,27 +9,27 @@ exec -l $SHELL
 gcloud init
 gcloud components install kubectl
 ```
-## Set Tools Project
+## Set Sandbox Tools Project
 ```none
 export tools=<your project id>
 gcloud config set project ${tools}
 ```
 ## Create Managed DNS Zone
 ```none
-gcloud dns managed-zones create obs-lzy-sh --description="My Sandbox Zone" --dns-name="obs.lzy.sh"
+gcloud dns managed-zones create sb-domain-com --description="My Sandbox Zone" --dns-name="sb.domain.com"
 ```
-## Add Record Set to Your Tools Project Zone
+## Add Record Set to Your Primary DNS Zone
 ```none
-$ gcloud dns record-sets list --zone obs-lzy-sh
+$ gcloud dns record-sets list --zone sb-domain-com
 NAME          TYPE  TTL    DATA
-obs.lzy.sh.  NS    21600  ns-cloud-a1.googledomains.com.,ns-cloud-a2.googledomains.com.,ns-cloud-a3.googledomains.com.,ns-cloud-a4.googledomains.com.
-obs.lzy.sh.  SOA   21600  ns-cloud-a1.googledomains.com. cloud-dns-hostmaster.google.com. 1 21600 3600 259200 300
+sb.domain.com.  NS    21600  ns-cloud-a1.googledomains.com.,ns-cloud-a2.googledomains.com.,ns-cloud-a3.googledomains.com.,ns-cloud-a4.googledomains.com.
+sb.domain.com.  SOA   21600  ns-cloud-a1.googledomains.com. cloud-dns-hostmaster.google.com. 1 21600 3600 259200 300
 ```
-This will show your NS record, grab the DATA and and create a NS record on your primary zone. The next step needs to be completed by a user with DNS Administrator IAM role for the tools project.
+That shows your NS record, grab the DATA and and create a NS record on your primary zone. If you use Google Cloud DNS for that you can simply run the following: 
 ```none
-gcloud --project ops-tools-prod dns record-sets transaction start -z=lzy-sh
-gcloud --project ops-tools-prod dns record-sets transaction add -z=lzy-sh --name="obs.lzy.sh." --type=NS --ttl=300 "ns-cloud-a1.googledomains.com." "ns-cloud-a2.googledomains.com." "ns-cloud-a3.googledomains.com." "ns-cloud-a4.googledomains.com."
-gcloud --project ops-tools-prod dns record-sets transaction execute -z=lzy-sh
+gcloud --project <dns-project> dns record-sets transaction start -z=domain-com
+gcloud --project <dns-project> dns record-sets transaction add -z=domain-com --name="sb.domain.com." --type=NS --ttl=300 "ns-cloud-a1.googledomains.com." "ns-cloud-a2.googledomains.com." "ns-cloud-a3.googledomains.com." "ns-cloud-a4.googledomains.com."
+gcloud --project <dns-project> dns record-sets transaction execute -z=domain-com
 ```
 ## Create Bucket for Terraform Remote State
 ```none
