@@ -149,10 +149,6 @@ data "template_file" "cert_manager" {
   }
 }
 
-data "template_file" "temp_tls" {
-  template = "${file("${path.module}/../k8s/temp-tls.yaml")}"
-}
-
 data "template_file" "gocd" {
   template = "${file("${path.module}/../k8s/gocd.yaml")}"
 
