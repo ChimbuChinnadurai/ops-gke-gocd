@@ -62,6 +62,7 @@ cd ops-gke-gocd/terraform
 terraform init -backend-config="bucket=${tools}_tf_state" -backend-config="project=${tools}"
 ```
 > NOTE: At this point you are setup to use [remote state](https://www.terraform.io/docs/state/remote.html) in Terraform. 
+## Setup Variables
 Create a `local.tfvars` file and edit to fit you needs:
 ```none
 cp local.tfvars.EXAMPLE local.tfvars
@@ -70,7 +71,7 @@ cp local.tfvars.EXAMPLE local.tfvars
 ## Terraform Plan & Apply
 ```none
 random=$RANDOM
-terraform plan -out="plan.out" -var-file="local.tfvars" -var="project=ops-gocd-${random}-sb" -var="host=gocd-${random}"
+terraform plan -out="plan.out" -var-file="local.tfvars" -var="project=<gocd-project>-${random}-sb" -var="host=gocd-${random}"
 terraform apply "plan.out"
 ```
 It will take about 5-10 minutes after terraform apply is successful for the Vault instance to be accessible. Ingress is doing its thing, DNS is being propagated and SSL certificates are being issued.
