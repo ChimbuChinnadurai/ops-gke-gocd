@@ -14,6 +14,7 @@ before_install:
     curl https://sdk.cloud.google.com | bash; fi
   - tar -xzf credentials.tar.gz
   - gcloud auth activate-service-account --key-file client-secret.json
+  - export GOOGLE_APPLICATION_CREDENTIALS=client-secret.json
   - if [ ! -d "${HOME}/terraform/bin" ]; then curl -O https://releases.hashicorp.com/terraform/0.11.8/terraform_0.11.8_linux_amd64.zip; mkdir ${HOME}/terraform/bin; unzip terraform_0.11.8_linux_amd64.zip -d ${HOME}/terraform/bin; fi
 install:
   - gcloud -q components update
