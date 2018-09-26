@@ -9,13 +9,12 @@ exec -l $SHELL
 gcloud init
 gcloud components install kubectl
 ```
-## Set Project
+## Set Tools Project
 ```none
-export sandbox=<your project id>
-gcloud config set project ${sandbox}
+export tools=<your project id>
+gcloud config set project ${tools}
 ```
 ## Create Managed DNS Zone
-*NOTE: You don't actually need to have a domain registrar for code to run, however it’s needed if you want to generate a usable application with DNS and a SSL certificate from Let’s Encrypt.*
 ```none
 gcloud dns managed-zones create obs-lzy-sh --description="My Sandbox Zone" --dns-name="obs.lzy.sh"
 ```
@@ -26,7 +25,7 @@ NAME          TYPE  TTL    DATA
 obs.lzy.sh.  NS    21600  ns-cloud-a1.googledomains.com.,ns-cloud-a2.googledomains.com.,ns-cloud-a3.googledomains.com.,ns-cloud-a4.googledomains.com.
 obs.lzy.sh.  SOA   21600  ns-cloud-a1.googledomains.com. cloud-dns-hostmaster.google.com. 1 21600 3600 259200 300
 ```
-This will show your NS record, grab the DATA and and create a NS record on your registrar. The next step needs to be completed by a user with DNS Administrator IAM role for the tools project.
+This will show your NS record, grab the DATA and and create a NS record on your primary zone. The next step needs to be completed by a user with DNS Administrator IAM role for the tools project.
 ```none
 gcloud --project ops-tools-prod dns record-sets transaction start -z=lzy-sh
 gcloud --project ops-tools-prod dns record-sets transaction add -z=lzy-sh --name="obs.lzy.sh." --type=NS --ttl=300 "ns-cloud-a1.googledomains.com." "ns-cloud-a2.googledomains.com." "ns-cloud-a3.googledomains.com." "ns-cloud-a4.googledomains.com."
@@ -34,7 +33,7 @@ gcloud --project ops-tools-prod dns record-sets transaction execute -z=lzy-sh
 ```
 ## Create Bucket for Terraform Remote State
 ```none
-gsutil mb -p ${sandbox} -c multi_regional -l US gs://${sandbox}_tf_state
+gsutil mb -p ${tools} -c multi_regional -l US gs://${tools}_tf_state
 ```
 ## Install Terraform
 ```none
@@ -52,7 +51,7 @@ git clone git@github.com:lzysh/ops-gke-gocd.git
 ## Initialize Terraform
 ```none
 cd ops-gke-gocd/terraform
-terraform init -backend-config="bucket=${sandbox}_tf_state" -backend-config="project=${sandbox}"
+terraform init -backend-config="bucket=${tools}_tf_state" -backend-config="project=${tools}"
 ```
 > NOTE: At this point you are setup to use [remote state](https://www.terraform.io/docs/state/remote.html) in Terraform. 
 Create a `local.tfvars` file and edit to fit you needs:
