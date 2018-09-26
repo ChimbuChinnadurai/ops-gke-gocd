@@ -21,12 +21,12 @@ install:
 script:
   - cd terraform
   - >-
-    terraform workspace select ops-iac-sb-gocd ||
-    terraform workspace new ops-iac-sb-gocd
-  - >-
     terraform init
     -backend-config="bucket=ops-iac-sb_tf_state"
     -backend-config="project=ops-iac-sb"
+  - >-
+    terraform workspace select ops-iac-sb-gocd ||
+    terraform workspace new ops-iac-sb-gocd
   - >-
     terraform plan
     -out="plan.out"
